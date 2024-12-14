@@ -1,155 +1,85 @@
-import { Monitor } from '@/types/monitor'
 import { cn } from '@/lib/utils'
-import { useState, useEffect } from 'react'
-import { formatDistanceToNow, format } from 'date-fns'
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { Activity, AlertTriangle, CheckCircle, HelpCircle } from 'lucide-react'
 
-interface DailyStatus {
-  date: string
+type ServiceStatusProps = {
+  name: string
   status: 'operational' | 'degraded' | 'down' | 'unknown'
-  responseTime?: number
-}
-
-type ServiceStatusProps = Pick<Monitor, 'name' | 'status' | 'lastCheck'> & {
   uptime: number
-  history?: DailyStatus[]
 }
 
-export function ServiceStatus({ name, status = 'operational', uptime, lastCheck, history = [] }: ServiceStatusProps) {
-  const [dailyStatuses, setDailyStatuses] = useState<DailyStatus[]>([])
-  const [isHovered, setIsHovered] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    const allDates = new Map<string, DailyStatus>()
-    const end = new Date()
-    const start = new Date()
-    start.setDate(start.getDate() - 30)
-    
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dateKey = format(d, 'yyyy-MM-dd')
-      allDates.set(dateKey, {
-        date: format(d, 'MMM d, yyyy'),
-        status: 'operational',
-        responseTime: 0
-      })
+export function ServiceStatus({ name, status = 'operational', uptime }: ServiceStatusProps) {
+  const statusConfig = {
+    operational: { 
+      color: 'bg-green-500/10 ring-1 ring-green-500/30', 
+      iconColor: 'text-green-500',
+      icon: CheckCircle, 
+      text: 'Operational',
+      badgeVariant: 'default'
+    },
+    degraded: { 
+      color: 'bg-yellow-500/10 ring-1 ring-yellow-500/30', 
+      iconColor: 'text-yellow-500',
+      icon: AlertTriangle, 
+      text: 'Degraded',
+      badgeVariant: 'warning'
+    },
+    down: { 
+      color: 'bg-red-500/10 ring-1 ring-red-500/30', 
+      iconColor: 'text-red-500',
+      icon: Activity, 
+      text: 'Down',
+      badgeVariant: 'destructive'
+    },
+    unknown: { 
+      color: 'bg-gray-500/10 ring-1 ring-gray-500/30', 
+      iconColor: 'text-gray-500',
+      icon: HelpCircle, 
+      text: 'No Data',
+      badgeVariant: 'secondary'
     }
-
-    if (Array.isArray(history)) {
-      history.forEach(entry => {
-        const date = new Date(entry.date)
-        const dateKey = format(date, 'yyyy-MM-dd')
-        if (allDates.has(dateKey)) {
-          allDates.set(dateKey, {
-            ...entry,
-            date: format(date, 'MMM d, yyyy')
-          })
-        }
-      })
-    }
-    
-    setDailyStatuses(Array.from(allDates.values()))
-  }, [history])
-
-  const statusColor = {
-    operational: 'bg-green-500',
-    degraded: 'bg-yellow-500',
-    down: 'bg-red-500',
-    unknown: 'bg-gray-300'
   }
 
-  const statusText = {
-    operational: 'Operational',
-    degraded: 'Degraded',
-    down: 'Down',
-    unknown: 'Unknown'
-  }
-
-  const getStatusDescription = (status: string, responseTime?: number) => {
-    if (status === 'operational') {
-      return responseTime 
-        ? `System operational (${responseTime}ms)`
-        : 'System operational'
-    }
-    if (status === 'degraded') {
-      return responseTime 
-        ? `Performance issues (${responseTime}ms)`
-        : 'Performance issues detected'
-    }
-    if (status === 'down') {
-      return 'System outage detected'
-    }
-    return 'No data available'
-  }
-
-  const lastCheckDate = lastCheck ? new Date(lastCheck) : null;
-
-  // Only show relative time after component is mounted
-  const lastCheckFormatted = mounted && lastCheckDate
-    ? formatDistanceToNow(lastCheckDate, { addSuffix: true })
-    : lastCheckDate
-    ? format(lastCheckDate, 'MMM d, yyyy HH:mm:ss')
-    : 'No last check available';
+  const { color, icon: Icon, text, iconColor, badgeVariant } = statusConfig[status]
 
   return (
-    <div 
-      className="space-y-2 rounded-lg bg-white p-4 shadow-sm transition-all hover:shadow-md"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className={cn(
-            'h-2.5 w-2.5 rounded-full transition-all',
-            statusColor[status],
-            isHovered ? 'scale-110' : ''
-          )} />
-          <span className="text-base font-medium text-gray-800">{name}</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-gray-500" title={`Last checked ${lastCheckFormatted}`}>
-            {uptime.toFixed(2)}% uptime
-          </div>
-          <div className={cn(
-            'text-sm font-medium transition-all',
-            status === 'operational' ? 'text-green-600' :
-            status === 'degraded' ? 'text-yellow-600' :
-            status === 'down' ? 'text-red-600' : 'text-gray-600'
-          )}>
-            {statusText[status]}
-          </div>
-        </div>
-      </div>
-      <div className="relative">
-        <div className="flex w-full gap-[1px] mb-1">
-          {dailyStatuses.map((day, index) => (
-            <div
-              key={`${format(new Date(day.date), 'yyyy-MM-dd')}-${index}`}
-              className={cn(
-                'group relative h-4 flex-1 cursor-help rounded-full transition-all',
-                statusColor[day.status]
-              )}
-            >
-              <div className="invisible absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 transition-all group-hover:visible group-hover:opacity-100 z-10">
-                <div className="whitespace-nowrap">
-                  <div className="font-medium">{day.date}</div>
-                  <div className="text-gray-300">
-                    {getStatusDescription(day.status, day.responseTime)}
-                  </div>
-                </div>
-                <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
-              </div>
+    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+      <CardContent className="p-6 bg-white dark:bg-gray-800">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className={cn(
+              'h-12 w-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110',
+              color
+            )}>
+              <Icon className={cn('h-6 w-6 transition-colors', iconColor)} />
             </div>
-          ))}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{name}</h3>
+              <Badge 
+                variant={badgeVariant as any}
+                className={cn(
+                  'text-sm font-medium transition-all duration-300',
+                  'group-hover:scale-105'
+                )}
+              >
+                {text}
+              </Badge>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className={cn(
+              'text-2xl font-bold',
+              status === 'operational' ? 'text-green-500' :
+              status === 'degraded' ? 'text-yellow-500' :
+              status === 'down' ? 'text-red-500' : 'text-gray-500'
+            )}>
+              {uptime.toFixed(2)}%
+            </div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Uptime</div>
+          </div>
         </div>
-        <div className="flex justify-between text-xs text-gray-500">
-          <span>30 days ago</span>
-          <span>Today</span>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
