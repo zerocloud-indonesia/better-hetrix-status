@@ -31,7 +31,7 @@ export function UptimeMonitor() {
       setMonitors(data.monitors);
       setLastMonitors(data.monitors); // Update last successful data
       localStorage.setItem('monitors', JSON.stringify(data.monitors)); // Cache the data in local storage
-    } catch (err) {
+    } catch {
       setError("Failed to fetch monitors");
       setMonitors(lastMonitors); // Revert to last successful data
     } finally {
@@ -47,7 +47,7 @@ export function UptimeMonitor() {
     fetchMonitors();
     const interval = setInterval(fetchMonitors, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchMonitors]);
 
   if (error) {
     return (

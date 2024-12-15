@@ -57,7 +57,7 @@ export function ServiceStatus({ name, status = 'operational', uptime }: ServiceS
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{name}</h3>
               <Badge 
-                variant={badgeVariant as any}
+                variant={badgeVariant as 'default' | 'secondary' | 'destructive' | 'outline'}
                 className={cn(
                   'text-sm font-medium transition-all duration-300',
                   'group-hover:scale-105'

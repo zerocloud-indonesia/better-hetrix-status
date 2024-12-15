@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 // Cache storage
-let cachedData: any = null;
+let cachedData: { monitors: Monitor[] } | null = null;
 let lastFetchTime: number = 0;
 const CACHE_DURATION = 30 * 1000; // 30 seconds in milliseconds
 
@@ -42,7 +42,7 @@ async function fetchHetrixMonitors() {
     const data = await response.json();
 
     // Map the response to our Monitor type
-    const mappedMonitors = data.monitors.map((monitor: any) => {
+    const mappedMonitors = data.monitors.map((monitor: RawHetrixMonitor) => {
       const status = monitor.uptime_status === 'up' ? 'operational' : 
                     monitor.uptime_status === 'down' ? 'down' : 'degraded';
 
@@ -60,7 +60,7 @@ async function fetchHetrixMonitors() {
         uptime: parseFloat(uptimeValue),
         lastCheck: new Date(monitor.last_check * 1000).toISOString(),
         type: monitor.type || 'http',
-        responseTime: Object.values(monitor.locations || {}).reduce((avg: number, loc: any) => 
+        responseTime: Object.values(monitor.locations || {}).reduce((avg: number, loc: { response_time?: number }) => 
           avg + (loc.response_time || 0), 0) / Object.keys(monitor.locations || {}).length || 0,
         history: []
       };

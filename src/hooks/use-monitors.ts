@@ -17,7 +17,7 @@ export function useMonitors() {
       const data = await response.json()
       setMonitors(data.monitors)
       localStorage.setItem('monitors', JSON.stringify(data.monitors))
-    } catch (err) {
+    } catch {
       setError("Failed to fetch monitors")
       const cached = localStorage.getItem('monitors')
       if (cached) setMonitors(JSON.parse(cached))
