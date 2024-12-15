@@ -1,10 +1,11 @@
+export const runtime = 'edge';
+
 import { NextResponse } from 'next/server'
 import { fetchMonitors } from '@/utils/api'
 
 export async function GET() {
   try {
     const data = await fetchMonitors();
-    
     // Return response with cache headers
     return new NextResponse(JSON.stringify(data), {
       status: 200,
