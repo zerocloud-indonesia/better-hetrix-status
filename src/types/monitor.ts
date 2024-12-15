@@ -7,7 +7,7 @@ export interface DailyStatus {
 export interface Monitor {
   id: string
   name: string
-  status: 'operational' | 'degraded' | 'down'
+  status: 'operational' | 'degraded' | 'down' | 'unknown'
   uptime: number
   lastCheck: string
   type: string

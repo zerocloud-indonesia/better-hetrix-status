@@ -31,6 +31,13 @@ export function MonitorCard({ monitor }: MonitorCardProps) {
       bgColor: "bg-red-500/10",
       borderColor: "border-red-500/20",
       label: "Down"
+    },
+    unknown: {
+      icon: AlertTriangle,
+      color: "text-gray-500",
+      bgColor: "bg-gray-500/10",
+      borderColor: "border-gray-500/20",
+      label: "Unknown"
     }
   }
 

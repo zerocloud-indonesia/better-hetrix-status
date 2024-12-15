@@ -1,20 +1,11 @@
 export interface Monitor {
-    uptimePercentage: number;
-    uptime_stats: {
-        day: number;
-        week: number;
-        month: number;
-        [key: string]: number;
-    };
-    last_check_time: string | undefined;
     id: string;
     name: string;
-    status: 'up' | 'down' | 'maintenance';
+    status: 'operational' | 'degraded' | 'down' | 'unknown';
     uptime: number;
     lastCheck: string;
     type: string;
     responseTime: number;
-    location: string;
 }
 
 export interface RawHetrixMonitor {
@@ -25,8 +16,9 @@ export interface RawHetrixMonitor {
     Status: number;
     uptime_status: 'up' | 'down' | 'maintenance';
     uptime: string | number;
-    last_check: number;
+    last_check: number | string;
     type?: string;
+    Response_Time?: number;
     locations?: {
         [key: string]: {
             response_time?: number;
@@ -36,5 +28,5 @@ export interface RawHetrixMonitor {
 
 export interface HetrixResponse {
     status: string;
-    monitors: Monitor[];
+    monitors: RawHetrixMonitor[];
 }
