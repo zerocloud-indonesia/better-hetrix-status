@@ -1,4 +1,3 @@
-import { ThemeToggle } from "@/components/theme/theme-toggle"
 import { MotionDiv } from "@/components/ui/motion"
 import Image from "next/image"
 
@@ -20,15 +19,6 @@ export function Header() {
               Waffle.Host
             </span>
           </a>
-        </MotionDiv>
-        <MotionDiv 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <nav className="flex items-center gap-4">
-            <ThemeToggle />
-          </nav>
         </MotionDiv>
       </div>
     </header>

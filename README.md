@@ -1,6 +1,7 @@
 # Better Hetrix Status
 
 (none of the api keys in commits work :p)
+<<<<<<< HEAD
 A modern, beautiful status page built on top of the Hetrix Tools API, created by irazz for [waffle.host](https://waffle.host). This project transforms the standard Hetrix monitoring data into an elegant, user-friendly status dashboard.
 
 ## Features
@@ -51,3 +52,8 @@ pnpm dev
 ## Contributing
 
 Contributions are welcome! Feel free to open issues and pull requests.
+=======
+
+
+This project just makes use of hetrix api to make a more beatiful status page.
+>>>>>>> 261fe688b3e3a9cd5d71487a792015ce0c522d68
