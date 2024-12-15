@@ -5,6 +5,7 @@ import { MonitorCard } from "./monitor-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useMonitors } from "@/hooks/use-monitors"
 import { RefreshButton } from "@/components/ui/refresh-button"
+import { MotionDiv } from "@/components/ui/motion"
 
 export function MonitorGrid() {
   const { monitors, loading, error, refresh } = useMonitors()
@@ -29,23 +30,33 @@ export function MonitorGrid() {
         <RefreshButton onClick={refresh} loading={loading} />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {loading && monitors.length === 0 ? (
-          Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton 
-              key={`skeleton-${i}`} 
-              className="h-[140px] rounded-xl"
-            />
-          ))
-        ) : (
-          monitors.map((monitor) => (
+      {loading ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-[180px] rounded-xl" />
+          ))}
+        </div>
+      ) : (
+        <MotionDiv
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          initial="initial"
+          animate="animate"
+          variants={{
+            animate: {
+              transition: {
+                staggerChildren: 0.1
+              }
+            }
+          }}
+        >
+          {monitors.map((monitor: Monitor) => (
             <MonitorCard
               key={monitor.id}
               monitor={monitor}
             />
-          ))
-        )}
-      </div>
+          ))}
+        </MotionDiv>
+      )}
     </div>
   )
 }

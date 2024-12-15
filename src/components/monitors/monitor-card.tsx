@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Activity, CheckCircle, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { MotionDiv } from "@/components/ui/motion"
 
 interface MonitorCardProps {
   monitor: Monitor
@@ -37,44 +38,61 @@ export function MonitorCard({ monitor }: MonitorCardProps) {
   const Icon = config.icon
 
   return (
-    <Card className="group overflow-hidden border-border/50 hover:border-border">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300",
-              config.bgColor,
-              "group-hover:scale-110"
-            )}>
-              <Icon className={cn("h-5 w-5", config.color)} />
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-medium leading-none">{monitor.name}</h3>
-              <Badge 
-                variant="outline" 
+    <MotionDiv
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card className="group overflow-hidden border-border/50 hover:border-border hover:shadow-lg transition-all duration-300">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <MotionDiv
                 className={cn(
-                  "border transition-colors",
-                  config.borderColor,
-                  config.color
+                  "flex h-10 w-10 items-center justify-center rounded-full",
+                  config.bgColor
                 )}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
-                {config.label}
-              </Badge>
+                <Icon className={cn("h-5 w-5", config.color)} />
+              </MotionDiv>
+              <div className="space-y-1">
+                <h3 className="font-medium leading-none">{monitor.name}</h3>
+                <Badge 
+                  variant="outline" 
+                  className={cn(
+                    "border transition-colors",
+                    config.borderColor,
+                    config.color
+                  )}
+                >
+                  {config.label}
+                </Badge>
+              </div>
             </div>
+            <MotionDiv
+              className="text-right"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className={cn(
+                "text-2xl font-bold",
+                config.color
+              )}>
+                {monitor.uptime.toFixed(2)}%
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Uptime
+              </p>
+            </MotionDiv>
           </div>
-          <div className="text-right">
-            <div className={cn(
-              "text-2xl font-bold",
-              config.color
-            )}>
-              {monitor.uptime.toFixed(2)}%
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Uptime
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </MotionDiv>
   )
 }
