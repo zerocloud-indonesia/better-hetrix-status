@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ServiceStatus } from "./service-status";
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -19,7 +19,7 @@ export function UptimeMonitor() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMonitors = async () => {
+  const fetchMonitors = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -37,7 +37,7 @@ export function UptimeMonitor() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const cachedMonitors = localStorage.getItem('monitors');

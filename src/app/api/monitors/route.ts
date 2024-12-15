@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { Monitor, RawHetrixMonitor } from '@/types/hetrix'
 
 // Cache storage
 let cachedData: { monitors: Monitor[] } | null = null;
@@ -57,8 +58,10 @@ async function fetchHetrixMonitors() {
         id: monitor.id || '',
         name: monitor.name || '',
         status,
-        uptime: parseFloat(uptimeValue),
-        lastCheck: new Date(monitor.last_check * 1000).toISOString(),
+        uptime: parseFloat(uptimeValue.toString()),
+        lastCheck: typeof monitor.last_check === 'number' 
+          ? new Date(monitor.last_check * 1000).toISOString()
+          : new Date(monitor.last_check).toISOString(),
         type: monitor.type || 'http',
         responseTime: Object.values(monitor.locations || {}).reduce((avg: number, loc: { response_time?: number }) => 
           avg + (loc.response_time || 0), 0) / Object.keys(monitor.locations || {}).length || 0,
