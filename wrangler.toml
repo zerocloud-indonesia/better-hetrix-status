@@ -1,0 +1,12 @@
+name = "better-hetrix-status"
+compatibility_date = "2023-12-15"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "npm run build"
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+# Enable the Node.js compatibility flag
+node_compat = true
