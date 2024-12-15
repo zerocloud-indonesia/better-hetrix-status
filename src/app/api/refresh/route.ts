@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { fetchMonitors } from '../../../utils/api'
 import { revalidatePath } from 'next/cache'
 
@@ -11,4 +13,3 @@ export async function POST() {
     return new Response('Failed to refresh monitors', { status: 500 })
   }
 }
-
