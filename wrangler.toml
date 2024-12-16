@@ -1,4 +1,7 @@
+<<<<<<< Updated upstream
 <<<<<<< HEAD
+=======
+>>>>>>> Stashed changes
 name = "better-hetrix-status"
 compatibility_date = "2023-12-15"
 compatibility_flags = ["nodejs_compat"]
@@ -10,8 +13,12 @@ command = "npm run build"
 vars = { ENVIRONMENT = "production" }
 
 # Enable the Node.js compatibility flag
+<<<<<<< Updated upstream
 node_compat = true
 =======
 compatibility_flags = [ "nodejs_compat" ]
 compatibility_date = "2024-09-23"
 >>>>>>> 261fe688b3e3a9cd5d71487a792015ce0c522d68
+=======
+node_compat = true
+>>>>>>> Stashed changes
