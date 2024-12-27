@@ -37,7 +37,7 @@ export function UptimeMonitor() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [lastMonitors]);
 
   useEffect(() => {
     const cachedMonitors = localStorage.getItem('monitors');

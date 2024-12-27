@@ -21,7 +21,7 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
     const isCacheStale = monitorsCache.data && (now - monitorsCache.timestamp) < STALE_WHILE_REVALIDATE;
 
     // Return valid cache
-    if (isCacheValid) {
+    if (isCacheValid && monitorsCache.data) {
         return { monitors: monitorsCache.data };
     }
 

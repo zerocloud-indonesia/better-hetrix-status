@@ -1,12 +1,11 @@
 "use client"
 
-import { Monitor } from "@/types/monitor"
 import { MonitorCard } from "./monitor-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useMonitors } from "@/hooks/use-monitors"
 import { RefreshButton } from "@/components/ui/refresh-button"
 import { motion, AnimatePresence } from "framer-motion"
-import { groupMonitorsByCategory, CategoryStats } from "@/utils/helpers"
+import { groupMonitorsByCategory } from "@/utils/helpers"
 import { ChevronDown, FolderIcon, CheckCircle, AlertTriangle, Activity } from "lucide-react"
 import { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
