@@ -8,7 +8,13 @@ export async function GET() {
     try {
         if (!process.env.HETRIX_API_TOKEN) {
             console.error('HETRIX_API_TOKEN is not defined');
-            throw new Error('API token not configured');
+            return NextResponse.json(
+                { 
+                    monitors: [],
+                    error: 'API configuration error'
+                },
+                { status: 500 }
+            );
         }
 
         const { monitors } = await fetchMonitors();
@@ -32,21 +38,20 @@ export async function GET() {
         );
     } catch (error) {
         // Enhanced error logging
-        console.error('API Error:', error);
-        console.error('Error details:', {
-            message: error instanceof Error ? error.message : 'Unknown error',
-            stack: error instanceof Error ? error.stack : undefined
-        });
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('API Error:', errorMessage);
         
         return NextResponse.json(
             { 
                 monitors: [],
-                error: process.env.NODE_ENV === 'development' 
-                    ? error instanceof Error ? error.message : 'Unknown error'
-                    : 'Internal server error'
+                error: errorMessage,
+                timestamp: new Date().toISOString()
             },
             { 
-                status: 500
+                status: 500,
+                headers: {
+                    'Cache-Control': 'no-store'
+                }
             }
         );
     }

@@ -30,74 +30,63 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
             throw new Error('HETRIX_API_TOKEN environment variable is not configured');
         }
 
-        const response = await fetch(`${HETRIX_API_URL}/uptime-monitors`, {
+        console.log('Fetching monitors from HetrixTools API...');
+        const response = await fetch(`${HETRIX_API_URL}/uptime-monitors/`, {
             headers: {
-                'Accept': 'application/json',
                 'Authorization': `Bearer ${HETRIX_API_TOKEN}`
             },
             method: 'GET',
             cache: 'no-store'
         });
 
+        console.log('API Response Status:', response.status);
+        
         if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+            const errorText = await response.text();
+            console.error('API Error Response:', errorText);
+            throw new Error(`API request failed with status ${response.status}: ${errorText}`);
         }
 
         const data = await response.json();
-        
-        if (!data || !Array.isArray(data.monitors)) {
-            throw new Error('Invalid API response format');
+        console.log('Parsed API Response:', JSON.stringify(data, null, 2));
+
+        // HetrixTools API returns monitors in the root array
+        const monitorsData = Array.isArray(data) ? data : data.monitors;
+
+        if (!Array.isArray(monitorsData)) {
+            throw new Error(`Invalid API response format. Expected array, got ${typeof monitorsData}`);
         }
 
-        const monitors: Monitor[] = data.monitors.map((monitor: RawHetrixMonitor) => {
-            // Map the API status to our status types
-            let status: Monitor['status'];
-            switch (monitor.uptime_status) {
-                case 'up':
-                    status = 'operational';
-                    break;
-                case 'down':
-                    status = 'down';
-                    break;
-                case 'maintenance':
-                    status = 'degraded';
-                    break;
-                default:
-                    status = 'unknown';
-            }
-
-            return {
-                id: monitor.id?.toString() || '',
-                name: monitor.name || 'Unknown Monitor',
-                status,
-                uptime: parseFloat(monitor.uptime?.toString() || '0'),
-                lastCheck: typeof monitor.last_check === 'number' 
-                    ? new Date(monitor.last_check * 1000).toISOString()
-                    : new Date(monitor.last_check).toISOString(),
-                type: monitor.type || 'http',
-                category: monitor.category || '',
-                responseTime: monitor.Response_Time || 0
-            };
-        });
+        const monitorsWithRequiredFields = monitorsData.map((monitor: RawHetrixMonitor) => ({
+            lastCheck: monitor.last_check || 'unknown',
+            type: monitor.type || 'defaultType',
+            responseTime: monitor.Response_Time || 0,
+            status: (monitor.Status === 1 ? 'operational' : 
+                    monitor.Status === 2 ? 'degraded' : 
+                    monitor.Status === 0 ? 'down' : 
+                    'unknown') as 'operational' | 'degraded' | 'down' | 'unknown',
+            id: String(monitor.id || ''),
+            name: String(monitor.name || 'Unknown Monitor'),
+            uptime: Number(monitor.uptime || 0)
+        })) as Monitor[];
 
         // Update cache
         monitorsCache = {
-            data: monitors,
+            data: monitorsWithRequiredFields,
             timestamp: now
         };
 
-        return { monitors };
+        return { monitors: monitorsWithRequiredFields };
 
     } catch (error) {
-        console.error('Error fetching monitors:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        console.error('Error in fetchMonitors:', errorMessage);
         
-        // If rate limited or other error and we have stale cache, use it
         if (isCacheStale && monitorsCache.data) {
             console.log('Using stale cache due to API error');
             return { monitors: monitorsCache.data };
         }
 
-        // Re-throw the error to be handled by the caller
-        throw error;
+        throw new Error(`Failed to fetch monitors: ${errorMessage}`);
     }
 }
