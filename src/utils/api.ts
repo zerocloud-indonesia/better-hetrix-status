@@ -31,7 +31,7 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
         }
 
         console.log('Fetching monitors from HetrixTools API...');
-        const response = await fetch(`${HETRIX_API_URL}/uptime-monitors/`, {
+        const response = await fetch(`${HETRIX_API_URL}/uptime-monitors`, {
             headers: {
                 'Authorization': `Bearer ${HETRIX_API_TOKEN}`
             },
@@ -50,8 +50,8 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
         const data = await response.json();
         console.log('Parsed API Response:', JSON.stringify(data, null, 2));
 
-        // HetrixTools API returns monitors in the root array
-        const monitorsData = Array.isArray(data) ? data : data.monitors;
+        // HetrixTools API returns monitors in the monitors array
+        const monitorsData = data.monitors || [];
 
         if (!Array.isArray(monitorsData)) {
             throw new Error(`Invalid API response format. Expected array, got ${typeof monitorsData}`);
@@ -60,14 +60,17 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
         const monitorsWithRequiredFields = monitorsData.map((monitor: RawHetrixMonitor) => ({
             lastCheck: monitor.last_check || 'unknown',
             type: monitor.type || 'defaultType',
-            responseTime: monitor.Response_Time || 0,
-            status: (monitor.Status === 1 ? 'operational' : 
-                    monitor.Status === 2 ? 'degraded' : 
-                    monitor.Status === 0 ? 'down' : 
+            responseTime: monitor.locations ? 
+                Object.values(monitor.locations).reduce((acc, loc) => acc + (loc.response_time || 0), 0) / 
+                Object.keys(monitor.locations).length : 0,
+            status: (monitor.uptime_status === 'up' ? 'operational' : 
+                    monitor.uptime_status === 'down' ? 'down' : 
+                    monitor.uptime_status === 'maintenance' || monitor.monitor_status === 'maintenance' ? 'degraded' : 
                     'unknown') as 'operational' | 'degraded' | 'down' | 'unknown',
             id: String(monitor.id || ''),
             name: String(monitor.name || 'Unknown Monitor'),
-            uptime: Number(monitor.uptime || 0)
+            uptime: Number(parseFloat(monitor.uptime?.toString() || '0').toFixed(2)),
+            category: monitor.category || 'Uncategorized'
         })) as Monitor[];
 
         // Update cache

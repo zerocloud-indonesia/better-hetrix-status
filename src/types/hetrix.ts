@@ -15,6 +15,7 @@ export interface RawHetrixMonitor {
     name?: string;
     Status: number;
     uptime_status: 'up' | 'down' | 'maintenance';
+    monitor_status: 'active' | 'maintenance' | 'inactive';
     uptime: string | number;
     last_check: number | string;
     type?: string;
@@ -23,6 +24,8 @@ export interface RawHetrixMonitor {
     locations?: {
         [key: string]: {
             response_time?: number;
+            uptime_status: string;
+            last_check: number;
         };
     };
 }
