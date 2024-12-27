@@ -7,13 +7,18 @@ export const preferredRegion = 'fra1';
 export async function GET() {
     try {
         if (!process.env.HETRIX_API_TOKEN) {
-            console.error('HETRIX_API_TOKEN is not defined');
+            console.error('HETRIX_API_TOKEN environment variable is not configured');
             return NextResponse.json(
                 { 
                     monitors: [],
-                    error: 'API configuration error'
+                    error: 'HetrixTools API token is not configured. Please set the HETRIX_API_TOKEN environment variable in your Cloudflare Pages settings.'
                 },
-                { status: 500 }
+                { 
+                    status: 500,
+                    headers: {
+                        'Cache-Control': 'no-store'
+                    }
+                }
             );
         }
 
