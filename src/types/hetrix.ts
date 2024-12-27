@@ -1,12 +1,4 @@
-export interface Monitor {
-    id: string;
-    name: string;
-    status: 'operational' | 'degraded' | 'down' | 'unknown';
-    uptime: number;
-    lastCheck: string;
-    type: string;
-    responseTime: number;
-}
+
 
 export interface RawHetrixMonitor {
     ID?: string;
@@ -20,6 +12,7 @@ export interface RawHetrixMonitor {
     last_check: number | string;
     type?: string;
     category?: string;
+    monitor_type?: string;
     Response_Time?: number;
     locations?: {
         [key: string]: {
@@ -33,4 +26,14 @@ export interface RawHetrixMonitor {
 export interface HetrixResponse {
     status: string;
     monitors: RawHetrixMonitor[];
+}
+
+export interface ServerStats {
+    status: string;
+    data: {
+        cpu: number;
+        ram: number;
+        disk: number;
+        timestamp: string;
+    };
 }

@@ -1,16 +1,24 @@
-import { Monitor, RawHetrixMonitor } from '../types/hetrix';
-
+import {  RawHetrixMonitor, ServerStats } from '../types/hetrix';
+import { Monitor } from '../types/monitor';
 const HETRIX_API_TOKEN = process.env.HETRIX_API_TOKEN;
 const HETRIX_API_URL = 'https://api.hetrixtools.com/v3';
 
 // In-memory cache for monitors data
-let monitorsCache: {
+let monitorsCache: {    
     data: Monitor[] | null;
     timestamp: number;
 } = {
     data: null,
     timestamp: 0
 };
+
+// Cache for server stats data
+const serverStatsCache: {
+    [key: string]: {
+        data: ServerStats | null;
+        timestamp: number;
+    };
+} = {};
 
 const CACHE_DURATION = 30 * 1000; // 30 seconds
 const STALE_WHILE_REVALIDATE = 5 * 60 * 1000; // 5 minutes
@@ -48,7 +56,7 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
         }
 
         const data = await response.json();
-        console.log('Parsed API Response:', JSON.stringify(data, null, 2));
+        console.log('Raw API Response:', JSON.stringify(data, null, 2));
 
         // HetrixTools API returns monitors in the monitors array
         const monitorsData = data.monitors || [];
@@ -57,21 +65,45 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
             throw new Error(`Invalid API response format. Expected array, got ${typeof monitorsData}`);
         }
 
-        const monitorsWithRequiredFields = monitorsData.map((monitor: RawHetrixMonitor) => ({
-            lastCheck: monitor.last_check || 'unknown',
-            type: monitor.type || 'defaultType',
-            responseTime: monitor.locations ? 
-                Object.values(monitor.locations).reduce((acc, loc) => acc + (loc.response_time || 0), 0) / 
-                Object.keys(monitor.locations).length : 0,
-            status: (monitor.uptime_status === 'up' ? 'operational' : 
-                    monitor.uptime_status === 'down' ? 'down' : 
-                    monitor.uptime_status === 'maintenance' || monitor.monitor_status === 'maintenance' ? 'degraded' : 
-                    'unknown') as 'operational' | 'degraded' | 'down' | 'unknown',
-            id: String(monitor.id || ''),
-            name: String(monitor.name || 'Unknown Monitor'),
-            uptime: Number(parseFloat(monitor.uptime?.toString() || '0').toFixed(2)),
-            category: monitor.category || 'Uncategorized'
-        })) as Monitor[];
+        const monitorsWithRequiredFields = monitorsData.map((monitor: RawHetrixMonitor) => {
+            // Log raw monitor data
+            console.log('Raw monitor data:', {
+                id: monitor.id || monitor.ID,
+                name: monitor.name || monitor.Name,
+                type: monitor.type,
+                category: monitor.category,
+                monitor_type: monitor.monitor_type
+            });
+
+            // A monitor has an agent if it's in the Nodes category
+            const category = monitor.category || 'Uncategorized';
+            const hasAgent = category === 'Nodes';
+
+            return {
+                lastCheck: monitor.last_check || 'unknown',
+                type: monitor.type || 'defaultType',
+                responseTime: monitor.locations ? 
+                    Object.values(monitor.locations).reduce((acc, loc) => acc + (loc.response_time || 0), 0) / 
+                    Object.keys(monitor.locations).length : 0,
+                status: (monitor.uptime_status === 'up' ? 'operational' : 
+                        monitor.uptime_status === 'down' ? 'down' : 
+                        monitor.uptime_status === 'maintenance' || monitor.monitor_status === 'maintenance' ? 'degraded' : 
+                        'unknown') as 'operational' | 'degraded' | 'down' | 'unknown',
+                id: String(monitor.id || monitor.ID || ''),
+                name: String(monitor.name || monitor.Name || 'Unknown Monitor'),
+                uptime: Number(parseFloat(monitor.uptime?.toString() || '0').toFixed(2)),
+                category,
+                hasAgent
+            };
+        }) as Monitor[];
+
+        // Log processed monitors
+        console.log('Processed monitors:', monitorsWithRequiredFields.map(m => ({
+            name: m.name,
+            type: m.type,
+            category: m.category,
+            hasAgent: m.hasAgent
+        })));
 
         // Update cache
         monitorsCache = {
@@ -91,5 +123,77 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
         }
 
         throw new Error(`Failed to fetch monitors: ${errorMessage}`);
+    }
+}
+
+export async function fetchServerStats(monitorId: string): Promise<ServerStats> {
+    const now = Date.now();
+    const cache = serverStatsCache[monitorId];
+    const isCacheValid = cache?.data && (now - cache.timestamp) < CACHE_DURATION;
+    const isCacheStale = cache?.data && (now - cache.timestamp) < STALE_WHILE_REVALIDATE;
+
+    // Return valid cache
+    if (isCacheValid && cache.data) {
+        console.log('Using valid cache for server stats');
+        return cache.data;
+    }
+
+    try {
+        if (!HETRIX_API_TOKEN) {
+            throw new Error('HETRIX_API_TOKEN environment variable is not configured');
+        }
+
+        // If we're rate limited but have stale cache, use it
+        if (isCacheStale && cache?.data) {
+            console.log('Using stale cache for server stats due to rate limit');
+            return cache.data;
+        }
+
+        console.log(`Fetching server stats for monitor ${monitorId} from HetrixTools API...`);
+        const response = await fetch(`${HETRIX_API_URL}/server-monitor/${monitorId}/stats`, {
+            headers: {
+                'Authorization': `Bearer ${HETRIX_API_TOKEN}`
+            },
+            method: 'GET',
+            cache: 'no-store'
+        });
+
+        const data = await response.json();
+        console.log('Server stats response:', data);
+
+        if (!response.ok || data.status === 'ERROR') {
+            throw new Error(data.error_message || 'Failed to fetch server stats');
+        }
+
+        // Get the latest stats
+        const stats: ServerStats = {
+            status: data.status,
+            data: {
+                cpu: parseFloat(data.cpu || '0'),
+                ram: parseFloat(data.ram || '0'),
+                disk: parseFloat(data.disk || '0'),
+                timestamp: new Date().toISOString()
+            }
+        };
+
+        // Update cache
+        serverStatsCache[monitorId] = {
+            data: stats,
+            timestamp: now
+        };
+
+        return stats;
+
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        console.error(`Error fetching server stats for monitor ${monitorId}:`, errorMessage);
+
+        // If we have stale cache and hit an error, use it
+        if (isCacheStale && cache?.data) {
+            console.log('Using stale cache for server stats due to error');
+            return cache.data;
+        }
+
+        throw new Error(`Failed to fetch server stats: ${errorMessage}`);
     }
 }

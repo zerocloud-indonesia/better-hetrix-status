@@ -2,7 +2,6 @@ import { fetchMonitors } from '@/utils/api';
 import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';
-export const preferredRegion = 'fra1';
 
 export async function GET() {
     try {

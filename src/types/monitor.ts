@@ -13,5 +13,6 @@ export interface Monitor {
   type: string
   responseTime: number
   category: string
+  hasAgent: boolean
   history?: DailyStatus[]
 }
