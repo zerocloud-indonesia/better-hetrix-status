@@ -1,19 +1,28 @@
 import { Monitor, RawHetrixMonitor } from '../types/hetrix';
 
-const HETRIX_API_TOKEN = process.env.HETRIX_API_KEY;
+const HETRIX_API_TOKEN = process.env.HETRIX_API_TOKEN;
 const HETRIX_API_URL = 'https://api.hetrixtools.com/v3';
-const CACHE_DURATION = 30 * 1000; // 30 seconds
 
-let cachedData: { monitors: Monitor[]; timestamp: number } | null = null;
+// In-memory cache for monitors data
+let monitorsCache: {
+    data: Monitor[] | null;
+    timestamp: number;
+} = {
+    data: null,
+    timestamp: 0
+};
+
+const CACHE_DURATION = 30 * 1000; // 30 seconds
+const STALE_WHILE_REVALIDATE = 5 * 60 * 1000; // 5 minutes
 
 export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
-    if (!HETRIX_API_TOKEN) {
-        throw new Error('HetrixTools API token not found');
-    }
+    const now = Date.now();
+    const isCacheValid = monitorsCache.data && (now - monitorsCache.timestamp) < CACHE_DURATION;
+    const isCacheStale = monitorsCache.data && (now - monitorsCache.timestamp) < STALE_WHILE_REVALIDATE;
 
-    // Return cached data if valid
-    if (cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION) {
-        return { monitors: cachedData.monitors };
+    // Return valid cache
+    if (isCacheValid) {
+        return { monitors: monitorsCache.data };
     }
 
     try {
@@ -25,9 +34,17 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
             method: 'GET',
             cache: 'no-store'
         });
-        
-        if (!response.ok) {
-            throw new Error(`Failed to fetch monitors: ${response.statusText}`);
+
+        // If rate limited or other error and we have stale cache, use it silently
+        if (!response.ok && isCacheStale && monitorsCache.data) {
+            // Log the error but don't throw it
+            console.log(`API ${response.status} ${response.statusText}, using cache silently`);
+            return { monitors: monitorsCache.data };
+        }
+
+        // Only throw if we have no cache to fall back to
+        if (!response.ok && (!isCacheStale || !monitorsCache.data)) {
+            throw new Error(`API error: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
@@ -57,19 +74,25 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
                     ? new Date(monitor.last_check * 1000).toISOString()
                     : new Date(monitor.last_check).toISOString(),
                 type: monitor.type || 'http',
+                category: monitor.category || '',
                 responseTime: monitor.Response_Time || 0
             };
         });
 
-        // Update cache with timestamp
-        cachedData = { monitors, timestamp: Date.now() };
+        // Update cache
+        monitorsCache = {
+            data: monitors,
+            timestamp: now
+        };
+
         return { monitors };
     } catch (error) {
-        console.error('Error fetching monitors:', error);
-        // Return cached data if available, otherwise throw
-        if (cachedData) {
-            return { monitors: cachedData.monitors };
+        // On any error, return stale cache if available
+        if (isCacheStale && monitorsCache.data) {
+            console.log('Error fetching data, using cache silently:', error);
+            return { monitors: monitorsCache.data };
         }
+        // Only throw if we have no cache
         throw error;
     }
 }

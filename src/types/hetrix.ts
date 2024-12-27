@@ -18,6 +18,7 @@ export interface RawHetrixMonitor {
     uptime: string | number;
     last_check: number | string;
     type?: string;
+    category?: string;
     Response_Time?: number;
     locations?: {
         [key: string]: {

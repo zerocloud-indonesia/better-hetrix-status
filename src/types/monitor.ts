@@ -12,5 +12,6 @@ export interface Monitor {
   lastCheck: string
   type: string
   responseTime: number
+  category: string
   history?: DailyStatus[]
 }
