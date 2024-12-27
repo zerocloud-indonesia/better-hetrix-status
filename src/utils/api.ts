@@ -26,6 +26,10 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
     }
 
     try {
+        if (!HETRIX_API_TOKEN) {
+            throw new Error('HETRIX_API_TOKEN environment variable is not configured');
+        }
+
         const response = await fetch(`${HETRIX_API_URL}/uptime-monitors`, {
             headers: {
                 'Accept': 'application/json',
@@ -35,19 +39,16 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
             cache: 'no-store'
         });
 
-        // If rate limited or other error and we have stale cache, use it silently
-        if (!response.ok && isCacheStale && monitorsCache.data) {
-            // Log the error but don't throw it
-            console.log(`API ${response.status} ${response.statusText}, using cache silently`);
-            return { monitors: monitorsCache.data };
-        }
-
-        // Only throw if we have no cache to fall back to
-        if (!response.ok && (!isCacheStale || !monitorsCache.data)) {
-            throw new Error(`API error: ${response.status} ${response.statusText}`);
+        if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
         }
 
         const data = await response.json();
+        
+        if (!data || !Array.isArray(data.monitors)) {
+            throw new Error('Invalid API response format');
+        }
+
         const monitors: Monitor[] = data.monitors.map((monitor: RawHetrixMonitor) => {
             // Map the API status to our status types
             let status: Monitor['status'];
@@ -66,8 +67,8 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
             }
 
             return {
-                id: monitor.id || '',
-                name: monitor.name || '',
+                id: monitor.id?.toString() || '',
+                name: monitor.name || 'Unknown Monitor',
                 status,
                 uptime: parseFloat(monitor.uptime?.toString() || '0'),
                 lastCheck: typeof monitor.last_check === 'number' 
@@ -86,13 +87,17 @@ export async function fetchMonitors(): Promise<{ monitors: Monitor[] }> {
         };
 
         return { monitors };
+
     } catch (error) {
-        // On any error, return stale cache if available
+        console.error('Error fetching monitors:', error);
+        
+        // If rate limited or other error and we have stale cache, use it
         if (isCacheStale && monitorsCache.data) {
-            console.log('Error fetching data, using cache silently:', error);
+            console.log('Using stale cache due to API error');
             return { monitors: monitorsCache.data };
         }
-        // Only throw if we have no cache
+
+        // Re-throw the error to be handled by the caller
         throw error;
     }
 }
