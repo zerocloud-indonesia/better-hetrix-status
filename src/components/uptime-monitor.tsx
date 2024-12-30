@@ -8,6 +8,7 @@ import { CheckCircle, AlertTriangle, XCircle, RefreshCw, ChevronUp, ChevronDown 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from './ui/skeleton';
+import { env } from '@/utils/env';
 
 interface UptimeMonitorProps {
     monitor: Monitor;
@@ -44,7 +45,8 @@ export function UptimeMonitor({ monitor }: UptimeMonitorProps) {
 
     return (
         <div className={cn(
-            "group relative overflow-hidden rounded-lg border bg-card p-4",
+            "group relative overflow-hidden rounded-lg border bg-card px-4 pt-4",
+            monitor.hasAgent && env.showSystemStats ? "pb-2" : "pb-3",
             "hover:shadow-sm transition-all duration-200"
         )}>
             <div className="space-y-2.5">
@@ -78,9 +80,9 @@ export function UptimeMonitor({ monitor }: UptimeMonitorProps) {
                     </span>
                 </div>
 
-                {/* Server Stats - only for monitors with agents */}
-                {monitor.hasAgent && (
-                    <div className="pt-2 border-t">
+                {/* Server Stats - only for monitors with agents and when enabled */}
+                {monitor.hasAgent && env.showSystemStats && (
+                    <div>
                         <ServerStats monitorId={monitor.id} />
                     </div>
                 )}

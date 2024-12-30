@@ -1,5 +1,3 @@
-
-
 export interface RawHetrixMonitor {
     ID?: string;
     id?: string;
@@ -34,6 +32,10 @@ export interface ServerStats {
         cpu: number;
         ram: number;
         disk: number;
+        network: {
+            in: number;
+            out: number;
+        };
         timestamp: string;
     };
 }

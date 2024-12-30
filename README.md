@@ -1,19 +1,28 @@
 # Better Hetrix Status
 
-<<<<<<< Updated upstream
-(none of the api keys in commits work :p)
-<<<<<<< HEAD
 A modern, beautiful status page built on top of the Hetrix Tools API, created by irazz for [waffle.host](https://waffle.host). This project transforms the standard Hetrix monitoring data into an elegant, user-friendly status dashboard.
 
-## Features
+> Note: No API keys in the commit history are valid.
 
-- 🚀 Real-time monitor status updates
-- 💫 Modern, responsive design
-- ⚡ Built with Next.js and Edge Runtime
-- 🔄 Automatic refresh functionality
-- 📊 Clean visualization of uptime data
+## Demo
+
+https://status.waffle.host (Deployed on Cloudflare Pages)
 
 ## Getting Started
+
+Method 1: Cloudflare Pages (Recommended)
+
+1. Clone the repo
+2. Add it to Pages
+3. Set up your environment variables:
+   - `HETRIX_API_TOKEN=<your_api_key>`
+   - `NEXT_PUBLIC_SHOW_SYSTEM_STATS=true` (optional)
+   - `node_compat=true`
+   - `node_version=v22.1.0`
+4. Deploy and Enjoy
+
+
+Method 2: Other
 
 1. Clone the repository
 ```bash
@@ -28,9 +37,9 @@ pnpm install
 
 3. Set up your environment variables
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
-Add your Hetrix Tools API key to `.env.local`
+Add your Hetrix Tools API key to `.env`
 
 4. Run the development server
 ```bash
@@ -40,6 +49,7 @@ pnpm dev
 ## Environment Variables
 
 - `HETRIX_API_KEY` - Your Hetrix Tools API key
+- `SHOW_SYSTEM_STATS` - Toggle system usage statistics display (true/false)
 
 > Note: No API keys in the commit history are valid.
 
@@ -50,64 +60,15 @@ pnpm dev
 - Edge Runtime
 - Tailwind CSS
 
-## Contributing
 
-Contributions are welcome! Feel free to open issues and pull requests.
-=======
-=======
-A modern, beautiful status page built on top of the Hetrix Tools API, created by irazz for [waffle.host](https://waffle.host). This project transforms the standard Hetrix monitoring data into an elegant, user-friendly status dashboard.
->>>>>>> Stashed changes
+## API
 
-## Features
+This also offers a simple API for fetching data.
 
-<<<<<<< Updated upstream
-This project just makes use of hetrix api to make a more beatiful status page.
->>>>>>> 261fe688b3e3a9cd5d71487a792015ce0c522d68
-=======
-- 🚀 Real-time monitor status updates
-- 💫 Modern, responsive design
-- ⚡ Built with Next.js and Edge Runtime
-- 🔄 Automatic refresh functionality
-- 📊 Clean visualization of uptime data
+- `/api/monitors`: Fetches all monitors
+- `/api/monitors/:id/stats`: Fetches a specific monitor by ID, the ID is the one from hetrix
 
-## Getting Started
-
-1. Clone the repository
-```bash
-git clone https://github.com/waffle-host/better-hetrix-status.git
-cd better-hetrix-status
-```
-
-2. Install dependencies
-```bash
-pnpm install
-```
-
-3. Set up your environment variables
-```bash
-cp .env.example .env.local
-```
-Add your Hetrix Tools API key to `.env.local`
-
-4. Run the development server
-```bash
-pnpm dev
-```
-
-## Environment Variables
-
-- `HETRIX_API_KEY` - Your Hetrix Tools API key
-
-> Note: No API keys in the commit history are valid.
-
-## Tech Stack
-
-- Next.js 15
-- TypeScript
-- Edge Runtime
-- Tailwind CSS
 
 ## Contributing
 
 Contributions are welcome! Feel free to open issues and pull requests.
->>>>>>> Stashed changes

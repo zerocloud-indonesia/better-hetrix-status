@@ -75,6 +75,10 @@ export async function GET(
                 cpu: parseFloat(latestStats.CPU || '0'),
                 ram: parseFloat(latestStats.RAM || '0'),
                 disk: parseFloat(latestStats.Disk || '0'),
+                network: {
+                    in: parseFloat(latestStats.Network?.In || '0'),
+                    out: parseFloat(latestStats.Network?.Out || '0')
+                },
                 timestamp: new Date().toISOString()
             }
         };

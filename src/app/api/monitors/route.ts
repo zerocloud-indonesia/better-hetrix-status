@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
+// Cache the response for 30 seconds
+export const revalidate = 30;
+
 export async function GET() {
     try {
         if (!process.env.HETRIX_API_TOKEN) {
@@ -14,9 +17,6 @@ export async function GET() {
                 },
                 { 
                     status: 500,
-                    headers: {
-                        'Cache-Control': 'no-store'
-                    }
                 }
             );
         }
@@ -27,17 +27,13 @@ export async function GET() {
             console.log('No monitors returned from API');
         }
 
-        // Set cache headers
-        const headers = new Headers();
-        headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=300');
-        headers.set('CDN-Cache-Control', 'public, s-maxage=30, stale-while-revalidate=300');
-        headers.set('Vercel-CDN-Cache-Control', 'public, s-maxage=30, stale-while-revalidate=300');
-
         return NextResponse.json(
             { monitors },
             {
-                headers,
-                status: 200
+                status: 200,
+                headers: {
+                    'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+                }
             }
         );
     } catch (error) {
@@ -53,9 +49,6 @@ export async function GET() {
             },
             { 
                 status: 500,
-                headers: {
-                    'Cache-Control': 'no-store'
-                }
             }
         );
     }

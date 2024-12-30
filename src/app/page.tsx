@@ -8,7 +8,7 @@ import { StatusOverview } from '@/components/status/status-overview'
 import { useMonitors } from '@/hooks/use-monitors'
 
 export default function Home() {
-  const { monitors } = useMonitors()
+  const { monitors, loading, error, refresh } = useMonitors()
   const [currentTime, setCurrentTime] = useState('')
 
   useEffect(() => {
@@ -35,7 +35,12 @@ export default function Home() {
         {/* Monitors */}
         <div className="space-y-12">
           <section>
-            <MonitorGrid />
+            <MonitorGrid 
+              monitors={monitors}
+              loading={loading}
+              error={error}
+              onRefresh={refresh}
+            />
           </section>
 
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
