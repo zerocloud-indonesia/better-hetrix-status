@@ -18,7 +18,6 @@ Method 1: Cloudflare Pages (Recommended)
    - `HETRIX_API_TOKEN=<your_api_key>`
    - `NEXT_PUBLIC_SHOW_SYSTEM_STATS=true` (optional, will use a lot of requests for system usage if you have a lot of monitors)
    - `NEXT_PUBLIC_SHOW_NETWORK_STATS=false` (disable this if you disabled system stats too)
-   - `node_compat=true`
    - `node_version=v22.1.0`
 4. Deploy and Enjoy
 
