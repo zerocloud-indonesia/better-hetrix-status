@@ -13,8 +13,10 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 })
 
 export const metadata = {
-  title: 'Service Status',
-  description: 'Monitor your service uptime and incidents',
+  title: 'ZeroCloud Status Page',
+  description: 'Welcome to the ZeroCloud Status Page. Here you can monitor the uptime and performance of our services, track incidents, and stay informed about any issues affecting our platform. We are committed to providing reliable and transparent service status updates to ensure you are always in the loop.',
+  themeColor: '#49A0E8', // Blue color
+  image: '/banner_1.gif', // Add the path to your gif image
 }
 
 export default function RootLayout({
