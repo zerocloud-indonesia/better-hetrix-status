@@ -17,7 +17,7 @@ module.exports = {
 	  },
 	  extend: {
 		fontFamily: {
-		  sans: ['Montserrat', 'sans-serif'],
+		  sans: ['Plus Jakarta Sans', 'sans-serif'],
 		},
 		colors: {
 		  border: "hsl(var(--border))",
@@ -58,4 +58,4 @@ module.exports = {
 	  },
 	},
 	plugins: [require("tailwindcss-animate")],
-  }
+}

@@ -1,10 +1,16 @@
 import '@/app/globals.css'
-import { Inter } from 'next/font/google'
+import { Plus_Jakarta_Sans } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import { EnvProvider } from '@/providers/env-provider'
 import { env } from '@/utils/env'
 
-const inter = Inter({ subsets: ['latin'] })
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  // Include all the weights you need
+  weight: ['300', '400', '500', '600', '700'],
+  // Optional: you can add display: 'swap' for better performance
+  display: 'swap',
+})
 
 export const metadata = {
   title: 'Service Status',
@@ -18,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={plusJakartaSans.className}>
         <EnvProvider
           showSystemStats={env.showSystemStats}
           showCpuStats={env.showCpuStats}

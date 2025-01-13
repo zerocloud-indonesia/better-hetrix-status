@@ -1,67 +1,112 @@
+import { MotionDiv } from "@/components/ui/motion"
+import { Github, Instagram, Gamepad2, Mail, ExternalLink } from "lucide-react"
+
 export function Footer() {
+  const socials = [
+    { name: 'GitHub', icon: Github, href: 'https://github.com/zerocloudid' },
+    { name: 'Instagram', icon: Instagram, href: 'https://instagram.com/zerocloud.id' },
+    { name: 'Discord', icon: Gamepad2, href: 'https://discord.gg/25eJtzqsmk' },
+    { name: 'Email', icon: Mail, href: 'mailto:supports@zerocloud.id' }
+  ]
+
   return (
     <footer className="mt-auto border-t backdrop-blur-md transition-all duration-300 border-border/40 bg-background/80">
-      <div className="container mx-auto px-4 py-4 sm:py-6">
-        <div className="flex flex-col items-center text-center sm:text-left text-sm space-y-4">
-          <div className="flex flex-col items-center sm:items-start space-y-3">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-1">
-              <span>Powered by</span>
+      <div className="container mx-auto px-4 py-8 sm:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Company Info */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">ZeroCloud.id</h3>
+            <p className="text-sm text-muted-foreground">
+              Delivering reliable cloud hosting solutions with exceptional performance and speed. Your Server, Your Way! 🚀
+            </p>
+            <div className="flex gap-4">
+              {socials.map((social) => (
+                <MotionDiv
+                  key={social.name}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    aria-label={social.name}
+                  >
+                    <social.icon className="h-5 w-5" />
+                  </a>
+                </MotionDiv>
+              ))}
+            </div>
+          </div>
+
+          {/* Links */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Powered By</h3>
+            <div className="grid grid-cols-1 gap-2">
               <a 
                 href="https://hetrixtools.com" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="transition-colors duration-200 hover:text-amber-500 inline-flex items-center gap-1"
+                className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
               >
-                Hetrix Tools
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-              <span>and</span>
-              <a 
-                href="https://github.com/Waffle-Host/better-hetrix-status" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="transition-colors duration-200 hover:text-amber-500 inline-flex items-center gap-1"
-              >
-                Better-Hetrix-Page
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-            </div>
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-1">
-              <span>Custom Made for</span>
-              <a 
-                href="https://waffle.host" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="transition-colors duration-200 hover:text-amber-500 inline-flex items-center gap-1"
-              >
-                Waffle.host
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-              <span>by</span>
-              <a 
-                href="https://irazz.lol" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="transition-colors duration-200 hover:text-amber-500 inline-flex items-center gap-1"
-              >
-                irazz.lol
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
+                <ExternalLink className="h-4 w-4" />
+                <span>HetrixTools</span>
               </a>
             </div>
           </div>
-          <div className="text-muted-foreground">
-            &copy; {new Date().getFullYear()}
+
+          {/* Contact & Credits */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Other Links</h3>
+            <div className="grid grid-cols-1 gap-2">
+              <a 
+                href="https://zerocloud.id" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>Mainpage</span>
+              </a>
+              <a 
+                href="https://control.zerocloud.id" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>Gamepanel</span>
+              </a>
+              <a 
+                href="https://my.zerocloud.id" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>Billing</span>
+              </a>
+            </div>
           </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="mt-8 pt-8 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} ZeroCloud.id. All rights reserved.
+          </p>
+          <MotionDiv
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="flex items-center gap-4"
+          >
+            <a href="https://docs.zerocloud.id/policies/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">Privacy Policy</a>
+            <a href="https://docs.zerocloud.id/policies/tos" className="text-sm text-muted-foreground hover:text-primary transition-colors">Terms of Service</a>
+          </MotionDiv>
         </div>
       </div>
     </footer>
-  );
+  )
 }

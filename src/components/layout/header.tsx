@@ -12,12 +12,12 @@ export function Header() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <a href="https://waffle.host" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
+          <a href="https://zerocloud.id" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
             <MotionDiv whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Image src="/logo.png" alt="Logo" width={64} height={64} className="relative h-12 w-12 rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-primary/25"/>
             </MotionDiv>
             <span className="text-xl font-semibold tracking-tight">
-              Waffle.Host
+              ZeroCloud.id
             </span>
           </a>
         </MotionDiv>

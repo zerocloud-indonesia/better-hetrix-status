@@ -44,22 +44,6 @@ export default function Home() {
           </section>
 
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
-            <div className="text-center mb-8">
-              <p className="text-muted-foreground">
-                If you want the default status page click{' '}
-                <a 
-                  href="https://hetrixtools.com/r/babb66b12bad57b3665d8c2cc8effdb2/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  here
-                </a>
-              </p>
-            </div>
-          </section>
-
-          <section className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
             <div className="space-y-1 mb-6">
               <h2 className="text-2xl font-bold tracking-tight">Incident History</h2>
               <p className="text-sm text-muted-foreground">
