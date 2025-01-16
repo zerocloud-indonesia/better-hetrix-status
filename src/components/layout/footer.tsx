@@ -44,6 +44,15 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Powered By</h3>
             <div className="grid grid-cols-1 gap-2">
+            <a 
+                href="https://github.com/Waffle-Host/better-hetrix-status" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Github className="h-4 w-4" />
+                <span>better-hetrix-status</span>
+              </a>
               <a 
                 href="https://hetrixtools.com" 
                 target="_blank" 
@@ -52,15 +61,6 @@ export function Footer() {
               >
                 <ExternalLink className="h-4 w-4" />
                 <span>HetrixTools</span>
-              </a>
-              <a 
-                href="https://github.com/Waffle-Host/better-hetrix-status" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Github className="h-4 w-4" />
-                <span>better-hetrix-status</span>
               </a>
             </div>
           </div>
