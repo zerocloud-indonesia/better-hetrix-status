@@ -1,8 +1,9 @@
 import { MotionDiv } from "@/components/ui/motion"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
 import Image from "next/image"
+import { memo } from "react"
 
-export function Header() {
+export const Header = memo(function Header() {
   return (
     <header className="sticky top-0 z-10 border-b backdrop-blur-md transition-all duration-300 border-border/40 bg-background/80">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -32,4 +33,4 @@ export function Header() {
       </div>
     </header>
   )
-}
+})
