@@ -69,7 +69,7 @@ export function Footer() {
             <h3 className="text-lg font-semibold">Other Links</h3>
             <div className="grid grid-cols-1 gap-2">
               <a 
-                href="https://zerocloud.id" 
+                href="https://www.zerocloud.id" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
@@ -78,7 +78,7 @@ export function Footer() {
                 <span>Mainpage</span>
               </a>
               <a 
-                href="https://control.zerocloud.id" 
+                href="https://ctrl.zerocloud.id" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
@@ -87,7 +87,7 @@ export function Footer() {
                 <span>Gamepanel</span>
               </a>
               <a 
-                href="https://my.zerocloud.id" 
+                href="https://bill.zerocloud.id" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
@@ -102,7 +102,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-8 pt-8 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} ZeroCloud.id. All rights reserved.
+            &copy; {new Date().getFullYear()} ZeroCloud Indonesia. All rights reserved.
           </p>
           <MotionDiv
             initial={{ opacity: 0 }}
